@@ -230,9 +230,13 @@ impl TheGamesDbProvider {
         }
 
         // Release date
-        let release_date = game["release_date"]
-            .as_str()
-            .and_then(|d| chrono::NaiveDate::parse_from_str(d, "%Y-%m-%d").ok());
+        let release_date = game["release_date"].as_str().and_then(|d| {
+            time::Date::parse(
+                d,
+                &time::macros::format_description!("[year]-[month]-[day]"),
+            )
+            .ok()
+        });
 
         // Players
         let player_count = game["players"]
@@ -337,9 +341,14 @@ impl TheGamesDbProvider {
                 release_date,
                 platform_releases: Vec::new(),
                 updated_at: game["last_updated"].as_str().and_then(|s| {
-                    chrono::DateTime::parse_from_str(s, "%Y-%m-%d %H:%M:%S")
-                        .ok()
-                        .map(|dt| dt.with_timezone(&chrono::Utc))
+                    time::PrimitiveDateTime::parse(
+                        s,
+                        &time::macros::format_description!(
+                            "[year]-[month]-[day] [hour]:[minute]:[second]"
+                        ),
+                    )
+                    .ok()
+                    .map(time::PrimitiveDateTime::assume_utc)
                 }),
                 developers,
                 publishers,

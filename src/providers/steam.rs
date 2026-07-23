@@ -452,25 +452,25 @@ fn steam_genre(desc: &str) -> Genre {
     }
 }
 
-fn parse_steam_date(s: &str) -> Option<chrono::NaiveDate> {
-    use chrono::NaiveDate;
+fn parse_steam_date(s: &str) -> Option<time::Date> {
+    use time::macros::format_description;
     // "9 Jul, 2013"
-    if let Ok(d) = NaiveDate::parse_from_str(s, "%e %b, %Y") {
+    if let Ok(d) = time::Date::parse(s, &format_description!("[day padding:space] [month repr:short], [year]")) {
         return Some(d);
     }
     // "Sep 20, 2021" (US format)
-    if let Ok(d) = NaiveDate::parse_from_str(s, "%b %e, %Y") {
+    if let Ok(d) = time::Date::parse(s, &format_description!("[month repr:short] [day padding:space], [year]")) {
         return Some(d);
     }
     // "Jul 2013"
-    if let Ok(d) = NaiveDate::parse_from_str(&format!("1 {s}"), "%e %b %Y") {
+    if let Ok(d) = time::Date::parse(&format!("1 {s}"), &format_description!("[day padding:space] [month repr:short] [year]")) {
         return Some(d);
     }
     // "2013"
     s.trim()
         .parse::<i32>()
         .ok()
-        .and_then(|y| NaiveDate::from_ymd_opt(y, 1, 1))
+        .and_then(|y| time::Date::from_calendar_date(y, time::Month::January, 1).ok())
 }
 
 fn parse_steam_languages(html: &str) -> Vec<Language> {

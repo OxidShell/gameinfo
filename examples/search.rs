@@ -51,7 +51,7 @@ async fn main() -> Result<(), gameinfo::Error> {
             game.confidence * 100.0,
             game.title,
             game.release_date
-                .map_or("?".into(), |d| d.format("%Y").to_string()),
+                .map_or("?".into(), |d| d.year().to_string()),
             game.source,
             game.average_rating()
                 .map_or("no rating".into(), |r| format!("{r:.1}/100")),

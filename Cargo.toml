@@ -25,7 +25,7 @@ tokio       = { version = "1",    features = ["rt-multi-thread", "macros", "time
 async-trait = "0.1"
 tracing     = "0.1"
 strsim      = "0.11"
-chrono      = { version = "0.4",  features = ["serde"] }
+time        = { version = "0.3",  features = ["serde", "parsing", "formatting", "macros"] }
 
 [dev-dependencies]
 tokio              = { version = "1", features = ["rt-multi-thread", "macros"] }

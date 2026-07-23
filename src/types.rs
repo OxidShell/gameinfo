@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 
-use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
+use time::{Date, OffsetDateTime};
+
+time::serde::format_description!(ymd, Date, "[year]-[month]-[day]");
 
 /// Unified game information aggregated from one or more providers.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -39,9 +41,11 @@ pub struct GameInfo {
     pub file_formats: Vec<String>,
 
     // --- dates ------------------------------------------------------------
-    pub release_date: Option<NaiveDate>,
+    #[serde(with = "ymd::option")]
+    pub release_date: Option<Date>,
     pub platform_releases: Vec<PlatformRelease>,
-    pub updated_at: Option<DateTime<Utc>>,
+    #[serde(with = "time::serde::rfc3339::option")]
+    pub updated_at: Option<OffsetDateTime>,
 
     // --- credits ----------------------------------------------------------
     pub developers: Vec<Company>,
@@ -378,7 +382,8 @@ pub enum CompanyRole {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PlatformRelease {
     pub platform: Platform,
-    pub date: Option<NaiveDate>,
+    #[serde(with = "ymd::option")]
+    pub date: Option<Date>,
     pub region: Option<Region>,
 }
 

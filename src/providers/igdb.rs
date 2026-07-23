@@ -431,7 +431,7 @@ impl IgdbProvider {
 
         let updated_at = v["updated_at"]
             .as_i64()
-            .and_then(|ts| chrono::DateTime::from_timestamp(ts, 0));
+            .and_then(|ts| time::OffsetDateTime::from_unix_timestamp(ts).ok());
 
         let raw_score = v["rating"].as_f64().unwrap_or(50.0) / 100.0;
 
@@ -527,8 +527,8 @@ impl GameProvider for IgdbProvider {
 // Mapping helpers
 // ---------------------------------------------------------------------------
 
-fn timestamp_to_date(ts: i64) -> Option<chrono::NaiveDate> {
-    chrono::DateTime::from_timestamp(ts, 0).map(|dt: chrono::DateTime<chrono::Utc>| dt.date_naive())
+fn timestamp_to_date(ts: i64) -> Option<time::Date> {
+    time::OffsetDateTime::from_unix_timestamp(ts).ok().map(time::OffsetDateTime::date)
 }
 
 fn igdb_image_url(raw: &str) -> String {

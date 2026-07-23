@@ -82,7 +82,7 @@ impl DiskCache {
     async fn read<T: for<'de> Deserialize<'de>>(&self, path: &Path, ttl: Duration) -> Option<T> {
         let content = tokio::fs::read_to_string(path).await.ok()?;
         let entry: CacheEntry<T> = serde_json::from_str(&content).ok()?;
-        let age_secs = chrono::Utc::now().timestamp() - entry.cached_at;
+        let age_secs = time::OffsetDateTime::now_utc().unix_timestamp() - entry.cached_at;
         let ttl_i64 = i64::try_from(ttl.as_secs()).unwrap_or(i64::MAX);
         if age_secs > ttl_i64 {
             return None;
@@ -92,7 +92,7 @@ impl DiskCache {
 
     async fn write<T: Serialize + ?Sized>(&self, path: &Path, data: &T) {
         let entry = CacheEntry {
-            cached_at: chrono::Utc::now().timestamp(),
+            cached_at: time::OffsetDateTime::now_utc().unix_timestamp(),
             data,
         };
         let Ok(json) = serde_json::to_string(&entry) else {

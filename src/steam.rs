@@ -11,7 +11,6 @@ use std::{
     time::Duration,
 };
 
-use chrono::DateTime;
 use tracing::warn;
 
 use crate::{
@@ -29,7 +28,7 @@ pub struct InstalledGame {
     /// Name of the installation subdirectory inside `steamapps/common/`.
     pub install_dir: String,
     pub size_on_disk: Option<u64>,
-    pub last_updated: Option<DateTime<chrono::Utc>>,
+    pub last_updated: Option<time::OffsetDateTime>,
     pub build_id: Option<u64>,
 }
 
@@ -190,7 +189,7 @@ fn parse_appmanifest(content: &str) -> Option<InstalledGame> {
     let last_updated = map
         .get("LastUpdated")
         .and_then(|s| s.parse::<i64>().ok())
-        .and_then(|ts| DateTime::from_timestamp(ts, 0));
+        .and_then(|ts| time::OffsetDateTime::from_unix_timestamp(ts).ok());
 
     Some(InstalledGame {
         app_id,
