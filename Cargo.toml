@@ -1,6 +1,6 @@
 [package]
 name        = "gameinfo"
-version     = "0.1.0"
+version     = "0.2.0"
 edition     = "2024"
 rust-version = "1.85"
 description = "Unified game metadata from IGDB, TheGamesDB and Steam with smart multi-provider matching"
